@@ -14,7 +14,7 @@ const (
 	DefaultMaxTeardownTimeInSeconds = 10
 )
 
-// Ferry bytes between two sockets.
+// FerryBytes copies bytes between two sockets.
 // Tries to handle disconnections safely.
 // When one socket disconnects, a CloseWrite() is done to the other socket, and
 // a teardown timer started with the specified timeout value (if value is zero,
