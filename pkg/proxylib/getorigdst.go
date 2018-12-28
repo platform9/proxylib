@@ -3,7 +3,9 @@ package proxylib
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net"
+	"os"
 	"strconv"
 	"syscall"
 	"unsafe"
@@ -16,9 +18,11 @@ type sockaddr struct {
 
 const SO_ORIGINAL_DST = 80
 
-// RealServerAddress returns an intercepted connection's original destination.
+var logger = log.New(os.Stderr, "", log.LstdFlags)
+
+// OriginalDestination returns an intercepted connection's original destination.
 // Adapted from https://play.golang.org/p/GMAaKucHOr
-func RealServerAddress(conn *net.Conn) (string, error) {
+func OriginalDestination(cnxId string, conn *net.Conn) (string, error) {
 	tcpConn, ok := (*conn).(*net.TCPConn)
 	if !ok {
 		return "", errors.New("not a TCPConn")
@@ -48,7 +52,7 @@ func RealServerAddress(conn *net.Conn) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to get file from TCP connection: %s", err)
 	}
-	defer CloseConnection(file, "none", "file")
+	defer CloseConnection(file, logger, cnxId, "file")
 	fd := file.Fd()
 
 	var addr sockaddr
